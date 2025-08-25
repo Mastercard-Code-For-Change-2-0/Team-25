@@ -40,15 +40,11 @@ class AuthService {
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include", // Include cookies in the request
         body: JSON.stringify(userData),
       });
 
       const data = await response.json();
-
-      if (data.success && data.token) {
-        // Store token in cookie (client-side backup)
-        Cookies.set("auth-token", data.token, { expires: 7 });
-      }
 
       return data;
     } catch (error) {
@@ -71,15 +67,11 @@ class AuthService {
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include", // Include cookies in the request
         body: JSON.stringify(credentials),
       });
 
       const data = await response.json();
-
-      if (data.success && data.token) {
-        // Store token in cookie (client-side backup)
-        Cookies.set("auth-token", data.token, { expires: 7 });
-      }
 
       return data;
     } catch (error) {
@@ -95,21 +87,17 @@ class AuthService {
     try {
       await fetch(`${this.baseUrl}/logout`, {
         method: "POST",
+        credentials: "include", // Include cookies in the request
       });
     } catch (error) {
       console.error("Logout error:", error);
-    } finally {
-      // Always clear client-side token
-      Cookies.remove("auth-token");
     }
   }
 
   async getCurrentUser(): Promise<User | null> {
     try {
       const response = await fetch(`${this.baseUrl}/me`, {
-        headers: {
-          Authorization: `Bearer ${this.getToken()}`,
-        },
+        credentials: "include", // Include cookies in the request
       });
 
       const data = await response.json();
@@ -123,14 +111,6 @@ class AuthService {
       console.error("Get current user error:", error);
       return null;
     }
-  }
-
-  getToken(): string | undefined {
-    return Cookies.get("auth-token");
-  }
-
-  isAuthenticated(): boolean {
-    return !!this.getToken();
   }
 
   getDashboardRoute(role: string): string {

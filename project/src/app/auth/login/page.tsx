@@ -36,12 +36,18 @@ export default function Login() {
         role,
       });
 
+      console.log("Login response:", response); // Debug log
+
       if (response.success && response.user) {
+        console.log("User role:", response.user.role); // Debug log
         // Redirect to appropriate dashboard
         const dashboardRoute = AuthService.getDashboardRoute(
           response.user.role
         );
-        router.push(dashboardRoute);
+        console.log("Dashboard route:", dashboardRoute); // Debug log
+
+        // Use window.location.href as a more reliable redirect
+        window.location.href = dashboardRoute;
       } else {
         setError(response.message || "Login failed");
       }
@@ -73,7 +79,7 @@ export default function Login() {
           <option value="">--Choose Role--</option>
           <option value="admin">Admin</option>
           <option value="donor">Donor</option>
-          <option value="receiver">Receiver</option>
+          <option value="student">Student/Receiver</option>
         </select>
 
         <label

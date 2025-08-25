@@ -30,10 +30,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if role matches
-    const userRole = user.role;
-    const requestedRole = role === "student" ? "student" : role; // Handle student/receiver mapping
-
-    if (userRole !== requestedRole) {
+    if (user.role !== role) {
       return NextResponse.json(
         { success: false, message: "Invalid role for this account" },
         { status: 401 }
