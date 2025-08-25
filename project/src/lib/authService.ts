@@ -118,7 +118,7 @@ class AuthService {
       case "admin":
         return "/admin-dashboard";
       case "donor":
-        return "/donor-dashboard";
+        return "/Donor";
       case "student":
         return "/student-dashboard";
       default:

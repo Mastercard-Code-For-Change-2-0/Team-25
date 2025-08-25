@@ -8,7 +8,7 @@ export function middleware(request: NextRequest) {
   // Define protected routes
   const protectedRoutes = [
     "/admin-dashboard",
-    "/donor-dashboard",
+    "/Donor",
     "/student-dashboard",
   ];
 
@@ -36,7 +36,7 @@ export function middleware(request: NextRequest) {
       return NextResponse.redirect(new URL("/auth/login", request.url));
     }
 
-    if (pathname.startsWith("/donor-dashboard") && payload.role !== "donor") {
+    if (pathname.startsWith("/Donor") && payload.role !== "donor") {
       return NextResponse.redirect(new URL("/auth/login", request.url));
     }
 
@@ -54,7 +54,7 @@ export function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     "/admin-dashboard/:path*",
-    "/donor-dashboard/:path*",
+    "/Donor/:path*",
     "/student-dashboard/:path*",
   ],
 };
