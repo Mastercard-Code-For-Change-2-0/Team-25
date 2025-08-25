@@ -30,6 +30,18 @@ export default function Login() {
         return;
       }
 
+      // Hardcoded admin login
+      if (
+        role === "admin" &&
+        email === "admin@gmail.com" &&
+        password === "admin@2025"
+      ) {
+        console.log("Admin login successful"); // Debug log
+        // Redirect to admin dashboard
+        window.location.href = "/admin-dashboard";
+        return;
+      }
+
       const response = await AuthService.login({
         email,
         password,
@@ -126,6 +138,15 @@ export default function Login() {
           {loading ? "Logging in..." : "Login"}
         </button>
       </form>
+
+      {/* Admin login hint */}
+      <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+        <p className="text-sm text-blue-700 font-medium mb-1">
+          Admin Test Login:
+        </p>
+        <p className="text-xs text-blue-600">Email: admin@gmail.com</p>
+        <p className="text-xs text-blue-600">Password: admin@2025</p>
+      </div>
 
       <p className="mt-4 text-gray-600">
         Don&apos;t have an account?{" "}

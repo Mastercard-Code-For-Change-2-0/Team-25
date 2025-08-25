@@ -11,6 +11,21 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     const checkAuth = async () => {
+      // Check if it's a hardcoded admin login (no auth service needed)
+      const isHardcodedAdmin =
+        window.location.href.includes("/admin-dashboard");
+
+      if (isHardcodedAdmin) {
+        // Set a mock admin user for hardcoded login
+        setUser({
+          id: "admin-hardcoded",
+          email: "admin@gmail.com",
+          role: "admin",
+        });
+        setLoading(false);
+        return;
+      }
+
       const currentUser = await AuthService.getCurrentUser();
 
       if (!currentUser) {
@@ -33,6 +48,12 @@ export default function AdminDashboard() {
   }, [router]);
 
   const handleLogout = async () => {
+    // For hardcoded admin, just redirect without calling auth service
+    if (user?.id === "admin-hardcoded") {
+      router.push("/auth/login");
+      return;
+    }
+
     await AuthService.logout();
     router.push("/auth/login");
   };
