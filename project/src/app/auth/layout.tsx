@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
-import "./globals.css"; // Tailwind CSS styles
 
 // Google Fonts Setup
 const geistSans = Geist({
@@ -18,7 +17,8 @@ const geistMono = Geist_Mono({
 // SEO metadata
 export const metadata: Metadata = {
   title: "DonorConnect App",
-  description: "Connecting donors with students in need of educational funding.",
+  description:
+    "Connecting donors with students in need of educational funding.",
 };
 
 export default function RootLayout({
