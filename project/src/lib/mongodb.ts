@@ -1,34 +1,26 @@
-import { MongoClient, Db } from "mongodb";
+import mongoose from "mongoose";
 
-const uri = process.env.MONGODB_URI!;
-// const dbName = process.env.MONGODB_DB;
+const MONGODB_URI = process.env.MONGODB_URI;
 
-if (!uri) throw new Error("Missing MONGODB_URI env var");
-
-declare global {
-  var _mongoClientPromise: Promise<MongoClient> | undefined;
-  var _mongoClient: MongoClient | undefined;
+if (!MONGODB_URI) {
+  throw new Error(
+    "Please define the MONGODB_URI environment variable inside .env.local"
+  );
 }
 
-let client: MongoClient;
-let clientPromise: Promise<MongoClient>;
+let isConnected = false;
 
-if (process.env.NODE_ENV === "development") {
-  if (!global._mongoClientPromise) {
-    client = new MongoClient(uri);
-    global._mongoClientPromise = client.connect();
+export default async function connectDB() {
+  if (isConnected) {
+    return;
   }
-  clientPromise = global._mongoClientPromise;
-} else {
-  client = new MongoClient(uri);
-  clientPromise = client.connect();
-}
 
-export async function connectToDatabase(): Promise<{
-  client: MongoClient;
-  db: Db;
-}> {
-  const client = await clientPromise;
-  const db = client.db();
-  return { client, db };
+  try {
+    await mongoose.connect(MONGODB_URI!);
+    isConnected = true;
+    console.log("MongoDB connected successfully");
+  } catch (error) {
+    console.error("MongoDB connection error:", error);
+    throw error;
+  }
 }

@@ -1,0 +1,129 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import AuthService, { User } from "@/lib/authService";
+
+export default function AdminDashboard() {
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      // Check if it's a hardcoded admin login (no auth service needed)
+      const isHardcodedAdmin =
+        window.location.href.includes("/admin-dashboard");
+
+      if (isHardcodedAdmin) {
+        // Set a mock admin user for hardcoded login
+        setUser({
+          id: "admin-hardcoded",
+          email: "admin@gmail.com",
+          role: "admin",
+        });
+        setLoading(false);
+        return;
+      }
+
+      const currentUser = await AuthService.getCurrentUser();
+
+      if (!currentUser) {
+        router.push("/auth/login");
+        return;
+      }
+
+      if (currentUser.role !== "admin") {
+        // Redirect to appropriate dashboard
+        const dashboardRoute = AuthService.getDashboardRoute(currentUser.role);
+        router.push(dashboardRoute);
+        return;
+      }
+
+      setUser(currentUser);
+      setLoading(false);
+    };
+
+    checkAuth();
+  }, [router]);
+
+  const handleLogout = async () => {
+    // For hardcoded admin, just redirect without calling auth service
+    if (user?.id === "admin-hardcoded") {
+      router.push("/auth/login");
+      return;
+    }
+
+    await AuthService.logout();
+    router.push("/auth/login");
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-lg">Loading...</div>
+      </div>
+    );
+  }
+
+  if (!user) return null;
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <header className="bg-white shadow-sm border-b">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            <h1 className="text-xl font-semibold text-gray-900">
+              Admin Dashboard
+            </h1>
+            <div className="flex items-center space-x-4">
+              <span className="text-sm text-gray-600">
+                Welcome, {user.email}
+              </span>
+              <button
+                onClick={handleLogout}
+                className="bg-red-600 text-white px-4 py-2 rounded-md text-sm hover:bg-red-700 transition"
+              >
+                Logout
+              </button>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+        <div className="px-4 py-6 sm:px-0">
+          <div className="border-4 border-dashed border-gray-200 rounded-lg h-96 p-8">
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">
+              Admin Panel
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="bg-white p-6 rounded-lg shadow">
+                <h3 className="text-lg font-semibold mb-2">Manage Users</h3>
+                <p className="text-gray-600">
+                  View and manage all registered users
+                </p>
+              </div>
+              <div className="bg-white p-6 rounded-lg shadow">
+                <h3 className="text-lg font-semibold mb-2">Donations</h3>
+                <p className="text-gray-600">Monitor donation activities</p>
+              </div>
+              <div className="bg-white p-6 rounded-lg shadow">
+                <h3 className="text-lg font-semibold mb-2">Reports</h3>
+                <p className="text-gray-600">Generate system reports</p>
+              </div>
+            </div>
+            <div className="mt-6 p-4 bg-blue-50 rounded-lg">
+              <h4 className="font-semibold text-blue-800">User Information:</h4>
+              <p className="text-blue-700">Email: {user.email}</p>
+              <p className="text-blue-700">Role: {user.role}</p>
+              <p className="text-blue-700">
+                Location: {user.city}, {user.state}
+              </p>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  );
+}
